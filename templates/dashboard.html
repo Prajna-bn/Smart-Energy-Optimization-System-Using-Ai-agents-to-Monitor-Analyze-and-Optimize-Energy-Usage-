@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Energy Demand Predictor{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+    </h2>
+    <div>
+        <a href="{{ url_for('new_prediction') }}" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-2"></i>New Prediction
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-chart-line me-2"></i>Total Predictions
+                </h5>
+                <h2 class="display-4">{{ total_predictions }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-tree me-2"></i>Avg RF Prediction
+                </h5>
+                <h2 class="display-4">{{ "%.0f"|format(avg_rf) }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-info text-white h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-brain me-2"></i>Avg ANN Prediction
+                </h5>
+                <h2 class="display-4">{{ "%.0f"|format(avg_ann) }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-white h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-calendar me-2"></i>Member Since
+                </h5>
+                <h6>{{ current_user.created_at.strftime('%B %d, %Y') }}</h6>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Prediction History -->
+<div class="card shadow">
+    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="fas fa-history me-2"></i>Prediction History
+        </h5>
+        {% if predictions %}
+        <form action="{{ url_for('clear_history') }}" method="POST" style="display: inline;" 
+            onsubmit="return confirm('Are you sure you want to clear ALL predictions? This cannot be undone.');">
+            <button type="submit" class="btn btn-sm btn-danger">
+                <i class="fas fa-trash me-2"></i>Clear All
+            </button>
+        </form>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        {% if predictions %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>ID</th>
+                        <th>Date & Time</th>
+                        <th>Voltage (V)</th>
+                        <th>Current (A)</th>
+                        <th>Temp (°C)</th>
+                        <th>Humidity (%)</th>
+                        <th>RF Prediction</th>
+                        <th>ANN Prediction</th>
+                        <th>Ensemble</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pred in predictions %}
+                    <tr>
+                        <td>#{{ pred.id }}</td>
+                        <td>{{ pred.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>{{ "%.2f"|format(pred.voltage) }}</td>
+                        <td>{{ "%.2f"|format(pred.current) }}</td>
+                        <td>{{ "%.1f"|format(pred.temperature) }}</td>
+                        <td>{{ "%.0f"|format(pred.humidity) }}</td>
+                        <td class="text-primary fw-bold">{{ "%.0f"|format(pred.rf_prediction) }}</td>
+                        <td class="text-success fw-bold">{{ "%.0f"|format(pred.ann_prediction) }}</td>
+                        <td class="text-info fw-bold">{{ "%.0f"|format(pred.ensemble_prediction) if pred.ensemble_prediction else 'N/A' }}</td>
+                        <!-- Replace the delete button in dashboard.html with this form -->
+                        <td>
+                            <a href="{{ url_for('view_history_detail', prediction_id=pred.id) }}" 
+                            class="btn btn-sm btn-info" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <form action="{{ url_for('delete_history', prediction_id=pred.id) }}" 
+                                method="POST" style="display: inline;" 
+                                onsubmit="return confirm('Are you sure you want to delete this prediction?');">
+                                <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-history fa-4x text-muted mb-3"></i>
+            <h5>No Predictions Yet</h5>
+            <p class="text-muted">Start by making your first prediction</p>
+            <a href="{{ url_for('new_prediction') }}" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-2"></i>Make Prediction
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function deletePrediction(id) {
+    if (confirm('Are you sure you want to delete this prediction?')) {
+        fetch(`/delete-history/${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error deleting prediction: ' + data.error);
+            }
+        });
+    }
+}
+
+function clearHistory() {
+    if (confirm('Are you sure you want to clear all predictions?')) {
+        fetch('/clear-history', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error clearing history: ' + data.error);
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

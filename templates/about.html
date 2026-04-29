@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}About - Energy Demand Predictor{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="text-center mb-4">
+            <i class="fas fa-info-circle fa-4x text-info"></i>
+            <h2 class="mt-3">About Energy Demand Predictor</h2>
+        </div>
+        
+        <div class="card shadow">
+            <div class="card-body">
+                <h5>Project Overview</h5>
+                <p class="lead">
+                    This application uses machine learning to predict energy demand based on 
+                    electrical parameters and environmental conditions.
+                </p>
+                
+                <h5 class="mt-4">Models Used</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6>
+                                    <i class="fas fa-tree text-success me-2"></i>
+                                    Random Forest
+                                </h6>
+                                <p class="small text-muted">
+                                    Ensemble learning method that constructs multiple decision trees
+                                    and outputs the mean prediction. Handles non-linear relationships well.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6>
+                                    <i class="fas fa-brain text-info me-2"></i>
+                                    Neural Network
+                                </h6>
+                                <p class="small text-muted">
+                                    Multi-layer perceptron with multiple hidden layers that can learn
+                                    complex patterns in the data through backpropagation.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h5 class="mt-4">Features</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Secure user authentication with password hashing
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Real-time predictions using trained ML models
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Prediction history tracking for each user
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Detailed metrics including variance, MSE, and runtime
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Ensemble predictions combining multiple models
+                    </li>
+                </ul>
+                
+                <h5 class="mt-4">Input Parameters</h5>
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Description</th>
+                            <th>Typical Range</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Voltage (V)</td>
+                            <td>Electrical voltage</td>
+                            <td>1 - 13 V</td>
+                        </tr>
+                        <tr>
+                            <td>Current (A)</td>
+                            <td>Electrical current</td>
+                            <td>0 - 13 A</td>
+                        </tr>
+                        <tr>
+                            <td>Temperature (°C)</td>
+                            <td>Ambient temperature</td>
+                            <td>25 - 36 °C</td>
+                        </tr>
+                        <tr>
+                            <td>Humidity (%)</td>
+                            <td>Relative humidity</td>
+                            <td>55 - 80 %</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h5 class="mt-4">Performance Metrics</h5>
+                <ul>
+                    <li><strong>Convergence Speed:</strong> Training time for each model</li>
+                    <li><strong>Final Cost:</strong> Mean Squared Error (MSE) of predictions</li>
+                    <li><strong>Variance:</strong> Statistical variance between model predictions</li>
+                    <li><strong>Runtime:</strong> Time taken to generate prediction</li>
+                </ul>
+                
+                <div class="alert alert-info mt-4">
+                    <i class="fas fa-copyright me-2"></i>
+                    <strong>Note:</strong> This is a demonstration project. Predictions should be validated
+                    with real-world data before use in production.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

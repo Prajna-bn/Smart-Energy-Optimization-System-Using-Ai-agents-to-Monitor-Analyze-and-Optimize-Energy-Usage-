@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}500 - Server Error{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <div class="mb-4">
+        <i class="fas fa-bug fa-5x text-danger"></i>
+    </div>
+    <h1 class="display-4">500</h1>
+    <h2 class="mb-4">Internal Server Error</h2>
+    <p class="lead mb-4">Something went wrong on our end. Please try again later.</p>
+    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+        <a href="{{ url_for('index') }}" class="btn btn-primary btn-lg me-md-2">
+            <i class="fas fa-home me-2"></i>Go Home
+        </a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-lg">
+            <i class="fas fa-sync-alt me-2"></i>Try Again
+        </a>
+    </div>
+</div>
+{% endblock %}

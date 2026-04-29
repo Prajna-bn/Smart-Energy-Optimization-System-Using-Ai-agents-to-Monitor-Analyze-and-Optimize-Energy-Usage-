@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}New Prediction - Energy Demand Predictor{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="text-center mb-4">
+            <i class="fas fa-plus-circle fa-3x text-primary"></i>
+            <h2 class="mt-3">New Energy Demand Prediction</h2>
+            <p class="text-muted">Enter the parameters below to predict energy demand</p>
+        </div>
+        
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-sliders-h me-2"></i>Input Parameters
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Fixed: Proper form action and method -->
+                <form method="POST" action="{{ url_for('new_prediction') }}">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="voltage" class="form-label">
+                                <i class="fas fa-bolt me-2 text-warning"></i>Voltage (V)
+                            </label>
+                            <input type="number" step="any" min="0" max="15" 
+                                   class="form-control" id="voltage" name="voltage" 
+                                   value="{{vol}}" required>
+                            <div class="form-text">Typical range: 1-13 V</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="current" class="form-label">
+                                <i class="fas fa-wave-square me-2 text-info"></i>Current (A)
+                            </label>
+                            <input type="number" step="any" min="0" max="15" 
+                                   class="form-control" id="current" name="current" 
+                                   value="{{cur}}" required>
+                            <div class="form-text">Typical range: 0-13 A</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="temperature" class="form-label">
+                                <i class="fas fa-thermometer-half me-2 text-danger"></i>Temperature (°C)
+                            </label>
+                            <input type="number" step="any" min="20" max="40" 
+                                   class="form-control" id="temperature" name="temperature" 
+                                   value="{{temp}}" required>
+                            <div class="form-text">Typical range: 25-36 °C</div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="humidity" class="form-label">
+                                <i class="fas fa-tint me-2 text-primary"></i>Humidity (%)
+                            </label>
+                            <input type="number" step="any" min="40" max="90" 
+                                   class="form-control" id="humidity" name="humidity" 
+                                   value="{{hum}}" required>
+                            <div class="form-text">Typical range: 55-80 %</div>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label for="notes" class="form-label">
+                                <i class="fas fa-sticky-note me-2"></i>Notes (Optional)
+                            </label>
+                            <textarea class="form-control" id="notes" name="notes" 
+                                      rows="2" placeholder="Add any notes about this prediction"></textarea>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-tree me-2 text-success"></i>Random Forest</h6>
+                                    <p class="small text-muted mb-0">Ensemble learning with decision trees</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-brain me-2 text-info"></i>Neural Network</h6>
+                                    <p class="small text-muted mb-0">Deep learning with multiple layers</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-calculator me-2"></i>Predict Demand
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Sample Values Card - Using simple JavaScript for convenience only -->
+        <div class="card mt-4 bg-light">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="fas fa-lightbulb me-2 text-warning"></i>Sample Values
+                </h6>
+                <div class="row">
+                    <div class="col-md-3 col-6 mb-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary w-100 sample-btn" 
+                                onclick="setSample(7.5, 3.2, 28.5, 65)">
+                            Sample 1
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-6 mb-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary w-100 sample-btn" 
+                                onclick="setSample(11.2, 8.9, 31.2, 72)">
+                            Sample 2
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-6 mb-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary w-100 sample-btn" 
+                                onclick="setSample(5.8, 6.7, 29.8, 59)">
+                            Sample 3
+                        </button>
+                    </div>
+                    <div class="col-md-3 col-6 mb-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary w-100 sample-btn" 
+                                onclick="setSample(9.3, 5.1, 27.3, 68)">
+                            Sample 4
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Simple JavaScript for sample buttons only -->
+<script>
+function setSample(v, c, t, h) {
+    document.getElementById('voltage').value = v;
+    document.getElementById('current').value = c;
+    document.getElementById('temperature').value = t;
+    document.getElementById('humidity').value = h;
+}
+
+// Optional: Add warning for out-of-range values (doesn't block form submission)
+document.querySelector('form').addEventListener('submit', function(e) {
+    const voltage = parseFloat(document.getElementById('voltage').value);
+    const current = parseFloat(document.getElementById('current').value);
+    const temp = parseFloat(document.getElementById('temperature').value);
+    const humidity = parseFloat(document.getElementById('humidity').value);
+    
+    let warnings = [];
+    if (voltage < 0 || voltage > 15) warnings.push('Voltage');
+    if (current < 0 || current > 15) warnings.push('Current');
+    if (temp < 20 || temp > 40) warnings.push('Temperature');
+    if (humidity < 40 || humidity > 90) warnings.push('Humidity');
+    
+    if (warnings.length > 0) {
+        if (!confirm('Warning: ' + warnings.join(', ') + ' outside typical range. Continue anyway?')) {
+            e.preventDefault();
+        }
+    }
+});
+</script>
+{% endblock %}

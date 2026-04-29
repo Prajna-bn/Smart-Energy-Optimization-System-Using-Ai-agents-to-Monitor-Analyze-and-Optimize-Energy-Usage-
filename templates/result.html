@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction Result - Energy Demand Predictor{% endblock %}
+
+{% block content %}
+<div class="text-center mb-4">
+    <i class="fas fa-check-circle fa-4x text-success"></i>
+    <h2 class="mt-3">Prediction Complete!</h2>
+    <p class="text-muted">Your energy demand prediction results are ready</p>
+</div>
+
+<!-- Results Summary -->
+<div class="row mb-4">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Prediction Results
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Input Parameters -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="border-bottom pb-2">
+                            <i class="fas fa-sliders-h me-2"></i>Input Parameters
+                        </h6>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="text-center p-3 bg-light rounded">
+                            <small class="text-muted d-block">Voltage</small>
+                            <strong class="h5">{{ "%.2f"|format(prediction.voltage) }} V</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="text-center p-3 bg-light rounded">
+                            <small class="text-muted d-block">Current</small>
+                            <strong class="h5">{{ "%.2f"|format(prediction.current) }} A</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="text-center p-3 bg-light rounded">
+                            <small class="text-muted d-block">Temperature</small>
+                            <strong class="h5">{{ "%.1f"|format(prediction.temperature) }} °C</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="text-center p-3 bg-light rounded">
+                            <small class="text-muted d-block">Humidity</small>
+                            <strong class="h5">{{ "%.0f"|format(prediction.humidity) }} %</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Model Predictions -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="border-bottom pb-2">
+                            <i class="fas fa-microchip me-2"></i>Model Predictions
+                        </h6>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-primary text-white h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-tree fa-2x mb-2"></i>
+                                <h6>Random Forest</h6>
+                                <h3 class="mb-0">{{ "%.2f"|format(prediction.rf_prediction) }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-success text-white h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-brain fa-2x mb-2"></i>
+                                <h6>Neural Network</h6>
+                                <h3 class="mb-0">{{ "%.2f"|format(prediction.ann_prediction) }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card bg-info text-white h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-cubes fa-2x mb-2"></i>
+                                <h6>Ensemble</h6>
+                                <h3 class="mb-0">{{ "%.2f"|format(prediction.ensemble_prediction) if prediction.ensemble_prediction else 'N/A' }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Performance Metrics -->
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="border-bottom pb-2">
+                            <i class="fas fa-chart-line me-2"></i>Performance Metrics
+                        </h6>
+                    </div>
+                    
+                    <!-- Convergence Speed -->
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-header bg-secondary text-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-tachometer-alt me-2"></i>⚡ Convergence Speed
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td>Random Forest:</td>
+                                        <td class="text-end fw-bold">{{ "%.2f"|format(convergence_speed.get('random_forest', 15.5)) }} seconds</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Neural Network:</td>
+                                        <td class="text-end fw-bold">{{ "%.2f"|format(convergence_speed.get('ann', 45.2)) }} seconds</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Final Cost -->
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-header bg-secondary text-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-coins me-2"></i>💰 Final Cost (MSE)
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td>Random Forest:</td>
+                                        <td class="text-end fw-bold">{{ "%.4f"|format(prediction.rf_mse or 0) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Neural Network:</td>
+                                        <td class="text-end fw-bold">{{ "%.4f"|format(prediction.ann_mse or 0) }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Variance -->
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-header bg-secondary text-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-chart-pie me-2"></i>📈 Variance
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td>Variance:</td>
+                                        <td class="text-end fw-bold">{{ "%.4f"|format(prediction.variance or 0) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Std Deviation:</td>
+                                        <td class="text-end fw-bold">{{ "%.4f"|format(prediction.std_deviation or 0) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>CV:</td>
+                                        <td class="text-end fw-bold">
+                                            {{ "%.2f"|format((prediction.std_deviation / prediction.ensemble_prediction * 100) if prediction.ensemble_prediction and prediction.std_deviation else 0) }}%
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Runtime -->
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-header bg-secondary text-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-clock me-2"></i>⏱️ Runtime
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <td>Prediction Time:</td>
+                                        <td class="text-end fw-bold">{{ session.get('last_prediction', {}).get('runtime', 0)|round(4) }} seconds</td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td class="text-end fw-bold">{{ (session.get('last_prediction', {}).get('runtime', 0) * 1000)|round(2) }} ms</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notes -->
+                {% if prediction.notes %}
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-sticky-note me-2"></i>
+                    <strong>Notes:</strong> {{ prediction.notes }}
+                </div>
+                {% endif %}
+                
+                <!-- Action Buttons -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                    <a href="{{ url_for('new_prediction') }}" class="btn btn-primary me-md-2">
+                        <i class="fas fa-plus-circle me-2"></i>New Prediction
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-info me-md-2">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                    <button class="btn btn-success" onclick="window.print()">
+                        <i class="fas fa-print me-2"></i>Print Results
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart -->
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white">
+                <h6 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>Predictions Visualization
+                </h6>
+            </div>
+            <div class="card-body">
+                <canvas id="predictionChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Create chart
+const ctx = document.getElementById('predictionChart').getContext('2d');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Random Forest', 'Neural Network', 'Ensemble'],
+        datasets: [{
+            label: 'Predicted Demand',
+            data: [
+                {{ "%.2f"|format(prediction.rf_prediction) }},
+                {{ "%.2f"|format(prediction.ann_prediction) }},
+                {{ "%.2f"|format(prediction.ensemble_prediction) if prediction.ensemble_prediction else 0 }}
+            ],
+            backgroundColor: [
+                'rgba(54, 162, 235, 0.8)',
+                'rgba(75, 192, 192, 0.8)',
+                'rgba(153, 102, 255, 0.8)'
+            ],
+            borderColor: [
+                'rgba(54, 162, 235, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: false,
+                title: {
+                    display: true,
+                    text: 'Demand'
+                }
+            }
+        },
+        plugins: {
+            title: {
+                display: true,
+                text: 'Model Predictions Comparison'
+            },
+            legend: {
+                display: false
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
